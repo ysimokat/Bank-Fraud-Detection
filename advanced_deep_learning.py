@@ -17,6 +17,9 @@ import joblib
 import warnings
 warnings.filterwarnings('ignore')
 
+# Import GPU configuration
+from gpu_config import gpu_config, get_device
+
 # Import deep learning libraries
 try:
     import torch
@@ -25,6 +28,7 @@ try:
     from torch.utils.data import DataLoader, TensorDataset
     TORCH_AVAILABLE = True
     print("✅ PyTorch available")
+    print(f"   Device: {gpu_config.device_name}")
 except ImportError:
     print("❌ PyTorch not available")
     TORCH_AVAILABLE = False
@@ -131,7 +135,13 @@ class AdvancedDeepLearningPipeline:
         self.models = {}
         self.results = {}
         self.scaler = StandardScaler()
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu') if TORCH_AVAILABLE else None
+        self.device = gpu_config.get_device() if TORCH_AVAILABLE else None
+        
+        # Enable GPU optimizations
+        if TORCH_AVAILABLE:
+            gpu_config.enable_mixed_precision()
+            gpu_config.optimize_memory()
+            gpu_config.set_random_seeds(42)
         
     def load_and_prepare_data(self, file_path, test_size=0.2):
         """Load and prepare data for deep learning."""
@@ -202,9 +212,12 @@ class AdvancedDeepLearningPipeline:
         normal_indices = y_train == 0
         X_normal = X_train[normal_indices]
         
+        # Get optimal batch size based on GPU
+        batch_size = gpu_config.get_optimal_batch_size('autoencoder')
+        
         # Create PyTorch dataset
         normal_dataset = TensorDataset(X_normal)
-        train_loader = DataLoader(normal_dataset, batch_size=256, shuffle=True)
+        train_loader = DataLoader(normal_dataset, batch_size=batch_size, shuffle=True)
         
         # Initialize model
         input_dim = X_train.shape[1]
@@ -284,9 +297,12 @@ class AdvancedDeepLearningPipeline:
         X_balanced = X_train[balanced_indices]
         y_balanced = y_train[balanced_indices]
         
+        # Get optimal batch size based on GPU
+        batch_size = gpu_config.get_optimal_batch_size('deep')
+        
         # Create dataset
         train_dataset = TensorDataset(X_balanced, y_balanced)
-        train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
+        train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
         
         # Initialize model
         input_dim = X_train.shape[1]
@@ -562,6 +578,9 @@ def main():
     """Main execution function."""
     print("🚀 Advanced Deep Learning Fraud Detection Pipeline")
     print("=" * 60)
+    
+    # Print GPU configuration
+    gpu_config.print_config()
     
     # Initialize pipeline
     pipeline = AdvancedDeepLearningPipeline()

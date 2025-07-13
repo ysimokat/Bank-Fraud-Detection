@@ -27,6 +27,9 @@ from datetime import datetime
 import warnings
 warnings.filterwarnings('ignore')
 
+# Import GPU configuration
+from gpu_config import gpu_config, get_device
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -206,18 +209,24 @@ class EnhancedFraudDetector:
     4. Comprehensive evaluation
     """
     
-    def __init__(self, device='cpu'):
+    def __init__(self, device=None):
         """
         Args:
-            device: 'cpu' or 'cuda'
+            device: PyTorch device (auto-detected if None)
         """
-        self.device = device
+        self.device = device or gpu_config.get_device()
         self.models = {}
         self.scalers = {}
         self.training_history = {}
         self.results = {}
         
-        logger.info(f"EnhancedFraudDetector initialized on device: {device}")
+        # Enable GPU optimizations
+        gpu_config.enable_mixed_precision()
+        gpu_config.optimize_memory()
+        gpu_config.set_random_seeds(42)
+        
+        logger.info(f"EnhancedFraudDetector initialized on device: {self.device}")
+        logger.info(f"GPU Info: {gpu_config.device_name}")
     
     def prepare_data(self, df, test_size=0.2):
         """
@@ -270,13 +279,18 @@ class EnhancedFraudDetector:
             'input_dim': X_train_scaled.shape[1]
         }
     
-    def train_with_focal_loss(self, data, epochs=100, batch_size=256, lr=0.001):
+    def train_with_focal_loss(self, data, epochs=100, batch_size=None, lr=0.001):
         """
         Train neural network with Focal Loss.
         
         Implements feedback suggestion for focal loss integration.
         """
         logger.info("Training neural network with Focal Loss")
+        
+        # Get optimal batch size based on GPU memory
+        if batch_size is None:
+            batch_size = gpu_config.get_optimal_batch_size('deep')
+            logger.info(f"Using batch size: {batch_size}")
         
         # Create model
         model = FraudDetectionNN(
@@ -338,13 +352,18 @@ class EnhancedFraudDetector:
         
         logger.info("Focal Loss training completed")
     
-    def train_with_weighted_bce(self, data, epochs=100, batch_size=256, lr=0.001):
+    def train_with_weighted_bce(self, data, epochs=100, batch_size=None, lr=0.001):
         """
         Train neural network with Weighted Binary Cross-Entropy.
         
         Implements feedback suggestion for weighted BCE.
         """
         logger.info("Training neural network with Weighted BCE")
+        
+        # Get optimal batch size based on GPU memory
+        if batch_size is None:
+            batch_size = gpu_config.get_optimal_batch_size('deep')
+            logger.info(f"Using batch size: {batch_size}")
         
         # Create model
         model = FraudDetectionNN(
@@ -406,13 +425,18 @@ class EnhancedFraudDetector:
         
         logger.info("Weighted BCE training completed")
     
-    def train_autoencoder(self, data, epochs=100, batch_size=256, lr=0.001):
+    def train_autoencoder(self, data, epochs=100, batch_size=None, lr=0.001):
         """
         Train autoencoder for anomaly detection.
         
         Uses only normal transactions for training.
         """
         logger.info("Training autoencoder for anomaly detection")
+        
+        # Get optimal batch size based on GPU memory
+        if batch_size is None:
+            batch_size = gpu_config.get_optimal_batch_size('autoencoder')
+            logger.info(f"Using batch size: {batch_size}")
         
         # Filter normal transactions for training
         normal_mask = data['y_train'] == 0
@@ -631,9 +655,8 @@ def main():
     """Main training pipeline for enhanced deep learning models."""
     logger.info("Starting Enhanced Deep Learning Fraud Detection")
     
-    # Set device
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    logger.info(f"Using device: {device}")
+    # Print GPU configuration
+    gpu_config.print_config()
     
     # Load data
     try:
@@ -644,16 +667,16 @@ def main():
         logger.error("creditcard.csv not found. Please ensure the dataset is available.")
         return
     
-    # Initialize detector
-    detector = EnhancedFraudDetector(device=device)
+    # Initialize detector (device auto-detected by gpu_config)
+    detector = EnhancedFraudDetector()
     
     # Prepare data
     data = detector.prepare_data(df, test_size=0.2)
     
-    # Train models with different loss functions
-    detector.train_with_focal_loss(data, epochs=80, batch_size=512, lr=0.001)
-    detector.train_with_weighted_bce(data, epochs=80, batch_size=512, lr=0.001)
-    detector.train_autoencoder(data, epochs=60, batch_size=512, lr=0.001)
+    # Train models with different loss functions (batch sizes auto-optimized for GPU)
+    detector.train_with_focal_loss(data, epochs=80, lr=0.001)
+    detector.train_with_weighted_bce(data, epochs=80, lr=0.001)
+    detector.train_autoencoder(data, epochs=60, lr=0.001)
     
     # Create comparison report
     detector.create_comparison_report()

@@ -235,8 +235,7 @@ class FraudDetectionPipeline:
         axes[2].set_xlim(0, 1)
         
         plt.tight_layout()
-        plt.savefig('/mnt/c/Users/Helen/Desktop/CodeMonkey/AI_Practice/Bank_Fraud_Detection/model_comparison.png', 
-                    dpi=300, bbox_inches='tight')
+        plt.savefig('model_comparison.png', dpi=300, bbox_inches='tight')
         plt.show()
         
         print("📊 Performance comparison table:")
@@ -299,8 +298,7 @@ class FraudDetectionPipeline:
             axes[1,1].set_xlabel('Importance')
         
         plt.tight_layout()
-        plt.savefig('/mnt/c/Users/Helen/Desktop/CodeMonkey/AI_Practice/Bank_Fraud_Detection/detailed_analysis.png', 
-                    dpi=300, bbox_inches='tight')
+        plt.savefig('detailed_analysis.png', dpi=300, bbox_inches='tight')
         plt.show()
         
         print(f"🏆 Best performing model: {best_model_name}")
@@ -310,10 +308,10 @@ class FraudDetectionPipeline:
         """Save all trained models."""
         print("\n💾 Saving models...")
         
-        # Save all models
-        joblib.dump(self.models, '/mnt/c/Users/Helen/Desktop/CodeMonkey/AI_Practice/Bank_Fraud_Detection/fraud_models.joblib')
-        joblib.dump(self.scaler, '/mnt/c/Users/Helen/Desktop/CodeMonkey/AI_Practice/Bank_Fraud_Detection/scaler.joblib')
-        joblib.dump(self.results, '/mnt/c/Users/Helen/Desktop/CodeMonkey/AI_Practice/Bank_Fraud_Detection/model_results.joblib')
+        # Save all models (use relative paths for compatibility)
+        joblib.dump(self.models, 'fraud_models.joblib')
+        joblib.dump(self.scaler, 'scaler.joblib')
+        joblib.dump(self.results, 'model_results.joblib')
         
         print("✅ Models saved successfully")
 
@@ -326,9 +324,7 @@ def main():
     pipeline = FraudDetectionPipeline()
     
     # Load and preprocess data
-    X_train, X_test, y_train, y_test = pipeline.load_and_preprocess_data(
-        '/mnt/c/Users/Helen/Desktop/CodeMonkey/AI_Practice/Bank_Fraud_Detection/creditcard.csv'
-    )
+    X_train, X_test, y_train, y_test = pipeline.load_and_preprocess_data('creditcard.csv')
     
     # Train all models
     pipeline.train_baseline_models(X_train, y_train)

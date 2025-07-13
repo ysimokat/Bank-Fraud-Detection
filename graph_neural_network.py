@@ -19,6 +19,9 @@ from sklearn.preprocessing import StandardScaler
 import joblib
 from datetime import datetime, timedelta
 
+# Import GPU configuration
+from gpu_config import gpu_config, get_device
+
 class TransactionGraphBuilder:
     """Build graph representation of transactions."""
     
@@ -199,6 +202,9 @@ class HybridGNNFraudDetector:
         """Train the hybrid system."""
         print("🌐 Training Graph Neural Network for Fraud Detection...")
         
+        # Print GPU configuration
+        gpu_config.print_config()
+        
         self.traditional_models = traditional_models
         
         # Prepare graph data
@@ -281,17 +287,23 @@ class HybridGNNFraudDetector:
         train_data = graph_data[:train_size]
         val_data = graph_data[train_size:]
         
+        # Get optimal batch size based on GPU
+        batch_size = gpu_config.get_optimal_batch_size('deep')
+        
         # Create data loaders
-        train_loader = DataLoader(train_data, batch_size=32, shuffle=True)
-        val_loader = DataLoader(val_data, batch_size=32, shuffle=False)
+        train_loader = DataLoader(train_data, batch_size=batch_size, shuffle=True)
+        val_loader = DataLoader(val_data, batch_size=batch_size, shuffle=False)
         
         # Initialize model
         input_dim = graph_data[0].x.shape[1]
-        model = GraphAttentionFraudDetector(input_dim)
+        model = GraphAttentionFraudDetector(input_dim).to(gpu_config.get_device())
         
         # Training setup
         optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
         criterion = nn.CrossEntropyLoss()
+        
+        # Move data to device
+        device = gpu_config.get_device()
         
         # Training loop
         model.train()
@@ -300,6 +312,9 @@ class HybridGNNFraudDetector:
             
             for batch in train_loader:
                 optimizer.zero_grad()
+                
+                # Move batch to device
+                batch = batch.to(device)
                 
                 out = model(batch.x, batch.edge_index, batch.batch, batch.target_mask)
                 loss = criterion(out, batch.y)
