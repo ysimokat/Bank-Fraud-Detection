@@ -21,10 +21,10 @@ warnings.filterwarnings('ignore')
 
 # Import all our advanced components
 from fraud_detection_models import FraudDetectionPipeline
-from enhanced_fraud_models import EnhancedFraudDetector  
+from enhanced_fraud_models import CostSensitiveFraudDetector as EnhancedFraudDetector  
 from enhanced_deep_learning import EnhancedFraudDetector as DeepLearningDetector
 from graph_neural_network import HybridGNNFraudSystem
-from advanced_model_calibration import ModelCalibrationPipeline
+from advanced_model_calibration import ModelCalibratorAdvanced as ModelCalibrationPipeline
 from gpu_config import gpu_config
 
 class IntegratedFraudPipeline:
@@ -78,28 +78,33 @@ class IntegratedFraudPipeline:
         print("🚀 PHASE 2: Enhanced Models (XGBoost, LightGBM, CatBoost)")
         print("="*60)
         
+        # Prepare data for enhanced detector
+        feature_columns = [col for col in df.columns if col not in ['Class']]
+        X = df[feature_columns]
+        y = df['Class']
+        
+        # Train-test split
+        from sklearn.model_selection import train_test_split
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=0.2, stratify=y, random_state=42
+        )
+        
         self.enhanced_detector = EnhancedFraudDetector()
         
-        # Train enhanced models
-        self.enhanced_detector.train_all_models(df)
+        # Train baseline and advanced models
+        self.enhanced_detector.train_baseline_models(X_train, X_test, y_train, y_test)
+        self.enhanced_detector.train_advanced_models(X_train, X_test, y_train, y_test)
         
-        # Get results
-        enhanced_results = self.enhanced_detector.get_results_summary()
+        # Store models and results
+        self.all_models.update(self.enhanced_detector.models)
         
-        # Store models
-        self.all_models.update({
-            'xgboost': self.enhanced_detector.models.get('xgboost'),
-            'lightgbm': self.enhanced_detector.models.get('lightgbm'),
-            'catboost': self.enhanced_detector.models.get('catboost')
-        })
-        
-        # Convert results format
-        for model_name in ['xgboost', 'lightgbm', 'catboost']:
-            if model_name in enhanced_results:
+        # Get results from enhanced detector
+        for model_name, results in self.enhanced_detector.results.items():
+            if 'scores' in results:
                 self.all_results[model_name] = {
-                    'f1_score': enhanced_results[model_name]['f1'],
-                    'roc_auc': enhanced_results[model_name]['roc_auc'],
-                    'avg_precision': enhanced_results[model_name]['avg_precision']
+                    'f1_score': results['scores'].get('f1', 0),
+                    'roc_auc': results['scores'].get('roc_auc', 0),
+                    'avg_precision': results['scores'].get('avg_precision', 0)
                 }
     
     def run_deep_learning_models(self, df):
