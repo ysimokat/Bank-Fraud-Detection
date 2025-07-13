@@ -313,8 +313,18 @@ class CostSensitiveFraudDetector:
         
         logger.info(f"  XGBoost stopped at iteration: {xgb_model.best_iteration}")
         
-        # Cross-validation
-        cv_results = self._perform_cross_validation(xgb_model, X_train, y_train, 'XGBoost')
+        # Cross-validation with a model without early stopping
+        xgb_cv_model = xgb.XGBClassifier(
+            n_estimators=100,  # Fixed number for CV
+            learning_rate=0.1,
+            max_depth=6,
+            subsample=0.8,
+            colsample_bytree=0.8,
+            scale_pos_weight=scale_pos_weight,
+            random_state=42
+            # No early stopping for CV
+        )
+        cv_results = self._perform_cross_validation(xgb_cv_model, X_train, y_train, 'XGBoost')
         self.cv_scores['XGBoost'] = cv_results
         
         # Predictions
@@ -353,8 +363,19 @@ class CostSensitiveFraudDetector:
         
         logger.info(f"  LightGBM stopped at iteration: {lgb_model.best_iteration_}")
         
-        # Cross-validation
-        cv_results = self._perform_cross_validation(lgb_model, X_train, y_train, 'LightGBM')
+        # Cross-validation with a model without early stopping
+        lgb_cv_model = lgb.LGBMClassifier(
+            n_estimators=100,  # Fixed number for CV
+            learning_rate=0.1,
+            max_depth=6,
+            subsample=0.8,
+            colsample_bytree=0.8,
+            class_weight='balanced',
+            random_state=42,
+            verbose=-1
+            # No early stopping for CV
+        )
+        cv_results = self._perform_cross_validation(lgb_cv_model, X_train, y_train, 'LightGBM')
         self.cv_scores['LightGBM'] = cv_results
         
         # Predictions
