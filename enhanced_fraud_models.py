@@ -174,7 +174,7 @@ class CostSensitiveFraudDetector:
         
         return metrics
     
-    def _perform_cross_validation(self, model, X, y, model_name, cv_folds=5):
+    def _perform_cross_validation(self, model, X, y, model_name, cv_folds=3):
         """
         Perform comprehensive cross-validation with multiple metrics.
         
@@ -234,11 +234,9 @@ class CostSensitiveFraudDetector:
                 random_state=42,
                 max_depth=10
             ),
-            'SVM': SVC(
-                class_weight='balanced', 
-                probability=True, 
-                random_state=42
-            ),
+            # SVM removed for speed - takes too long with large datasets
+            # To enable: uncomment below and be prepared to wait 10-30 minutes
+            # 'SVM': SVC(class_weight='balanced', probability=True, random_state=42),
             'Naive Bayes': GaussianNB(),
             'Neural Network': MLPClassifier(
                 hidden_layer_sizes=(100, 50),

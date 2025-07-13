@@ -408,18 +408,52 @@ class AdvancedIntegratedPipeline(IntegratedFraudPipeline):
                 print("Please download from: https://www.kaggle.com/mlg-ulb/creditcardfraud")
                 return None
         
-        # Run base pipeline
+        # Run base pipeline phases 1-6
         if BASE_AVAILABLE:
             try:
-                print("\n[NOTE] Running base integrated pipeline...")
-                # Note: This would call the parent class method
-                # For now, we'll use fallback
-                self.run_basic_pipeline_fallback(df)
+                print("\n[NOTE] Running integrated pipeline phases 1-6...")
+                
+                # Phase 1: Basic Models
+                print("\n" + "="*60)
+                print(">>> PHASE 1: Basic Machine Learning Models")
+                print("="*60)
+                X_train, X_test, y_train, y_test = self.run_basic_models(df)
+                
+                # Phase 2: Enhanced Models
+                print("\n" + "="*60)
+                print(">>> PHASE 2: Enhanced Models (XGBoost, LightGBM, CatBoost)")
+                print("="*60)
+                self.run_enhanced_models(df)
+                
+                # Phase 3: Deep Learning
+                print("\n" + "="*60)
+                print(">>> PHASE 3: Deep Learning Models")
+                print("="*60)
+                self.run_deep_learning_models(df)
+                
+                # Phase 4: Graph Neural Network
+                print("\n" + "="*60)
+                print(">>> PHASE 4: Graph Neural Network")
+                print("="*60)
+                self.run_graph_neural_network(df)
+                
+                # Phase 5: Model Calibration
+                print("\n" + "="*60)
+                print(">>> PHASE 5: Model Calibration")
+                print("="*60)
+                self.run_model_calibration()
+                
+                # Phase 6: Ensemble Creation
+                print("\n" + "="*60)
+                print(">>> PHASE 6: Ensemble Creation")
+                print("="*60)
+                self.create_ensemble()
+                
             except Exception as e:
-                print(f"WARNING: Base pipeline failed: {str(e)}")
-                print("Using fallback method...")
-                self.run_basic_pipeline_fallback(df)
+                print(f"WARNING: Pipeline failed at some phase: {str(e)}")
+                print("Continuing with available models...")
         else:
+            print("Base pipeline not available, using fallback (Phase 1 only)...")
             self.run_basic_pipeline_fallback(df)
         
         # Advanced systems
