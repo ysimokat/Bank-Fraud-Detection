@@ -19,13 +19,42 @@ import joblib
 import warnings
 warnings.filterwarnings('ignore')
 
-# Import all our advanced components
+# Import all our advanced components with error handling
 from fraud_detection_models import FraudDetectionPipeline
-from enhanced_fraud_models import CostSensitiveFraudDetector as EnhancedFraudDetector  
-from enhanced_deep_learning import EnhancedFraudDetector as DeepLearningDetector
-from graph_neural_network import HybridGNNFraudSystem
-from advanced_model_calibration import ModelCalibratorAdvanced as ModelCalibrationPipeline
 from gpu_config import gpu_config
+
+# Try importing optional components
+try:
+    from enhanced_fraud_models import CostSensitiveFraudDetector as EnhancedFraudDetector
+    ENHANCED_AVAILABLE = True
+except ImportError:
+    print("⚠️ Enhanced fraud models not available")
+    ENHANCED_AVAILABLE = False
+    EnhancedFraudDetector = None
+
+try:
+    from enhanced_deep_learning import EnhancedFraudDetector as DeepLearningDetector
+    DEEP_LEARNING_AVAILABLE = True
+except ImportError:
+    print("⚠️ Deep learning models not available")
+    DEEP_LEARNING_AVAILABLE = False
+    DeepLearningDetector = None
+
+try:
+    from graph_neural_network import HybridGNNFraudSystem
+    GNN_AVAILABLE = True
+except ImportError:
+    print("⚠️ Graph neural networks not available")
+    GNN_AVAILABLE = False
+    HybridGNNFraudSystem = None
+
+try:
+    from advanced_model_calibration import ModelCalibratorAdvanced as ModelCalibrationPipeline
+    CALIBRATION_AVAILABLE = True
+except ImportError:
+    print("⚠️ Model calibration not available")
+    CALIBRATION_AVAILABLE = False
+    ModelCalibrationPipeline = None
 
 class IntegratedFraudPipeline:
     """
@@ -74,6 +103,10 @@ class IntegratedFraudPipeline:
     
     def run_enhanced_models(self, df):
         """Run enhanced models (XGBoost, LightGBM, CatBoost)."""
+        if not ENHANCED_AVAILABLE:
+            print("\n⏭️ Skipping enhanced models (not available)")
+            return
+            
         print("\n" + "="*60)
         print("🚀 PHASE 2: Enhanced Models (XGBoost, LightGBM, CatBoost)")
         print("="*60)
@@ -109,6 +142,10 @@ class IntegratedFraudPipeline:
     
     def run_deep_learning_models(self, df):
         """Run deep learning models."""
+        if not DEEP_LEARNING_AVAILABLE:
+            print("\n⏭️ Skipping deep learning models (not available)")
+            return
+            
         print("\n" + "="*60)
         print("🚀 PHASE 3: Deep Learning Models")
         print("="*60)
@@ -133,6 +170,10 @@ class IntegratedFraudPipeline:
     
     def run_graph_neural_network(self, df):
         """Run Graph Neural Network (simplified version)."""
+        if not GNN_AVAILABLE:
+            print("\n⏭️ Skipping graph neural network (not available)")
+            return
+            
         print("\n" + "="*60)
         print("🚀 PHASE 4: Graph Neural Network")
         print("="*60)
@@ -163,6 +204,10 @@ class IntegratedFraudPipeline:
     
     def run_model_calibration(self):
         """Run model calibration."""
+        if not CALIBRATION_AVAILABLE:
+            print("\n⏭️ Skipping model calibration (not available)")
+            return
+            
         print("\n" + "="*60)
         print("🚀 PHASE 5: Model Calibration")
         print("="*60)
