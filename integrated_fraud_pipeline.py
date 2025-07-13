@@ -28,7 +28,7 @@ try:
     from enhanced_fraud_models import CostSensitiveFraudDetector as EnhancedFraudDetector
     ENHANCED_AVAILABLE = True
 except ImportError:
-    print("⚠️ Enhanced fraud models not available")
+    print("Warning: Enhanced fraud models not available")
     ENHANCED_AVAILABLE = False
     EnhancedFraudDetector = None
 
@@ -36,15 +36,15 @@ try:
     from enhanced_deep_learning import EnhancedFraudDetector as DeepLearningDetector
     DEEP_LEARNING_AVAILABLE = True
 except ImportError:
-    print("⚠️ Deep learning models not available")
+    print("Warning: Deep learning models not available")
     DEEP_LEARNING_AVAILABLE = False
     DeepLearningDetector = None
 
 try:
-    from graph_neural_network import HybridGNNFraudSystem
+    from graph_neural_network import HybridGNNFraudDetector as HybridGNNFraudSystem
     GNN_AVAILABLE = True
 except ImportError:
-    print("⚠️ Graph neural networks not available")
+    print("Warning: Graph neural networks not available")
     GNN_AVAILABLE = False
     HybridGNNFraudSystem = None
 
@@ -52,7 +52,7 @@ try:
     from advanced_model_calibration import ModelCalibratorAdvanced as ModelCalibrationPipeline
     CALIBRATION_AVAILABLE = True
 except ImportError:
-    print("⚠️ Model calibration not available")
+    print("Warning: Model calibration not available")
     CALIBRATION_AVAILABLE = False
     ModelCalibrationPipeline = None
 
@@ -71,13 +71,13 @@ class IntegratedFraudPipeline:
         self.all_results = {}
         
         # Print GPU info
-        print("🖥️ System Configuration:")
+        print("[SYSTEM] System Configuration:")
         gpu_config.print_config()
         
     def run_basic_models(self, df):
         """Run basic ML models."""
         print("\n" + "="*60)
-        print("🚀 PHASE 1: Basic Machine Learning Models")
+        print(">>> PHASE 1: Basic Machine Learning Models")
         print("="*60)
         
         self.basic_pipeline = FraudDetectionPipeline()
@@ -104,11 +104,11 @@ class IntegratedFraudPipeline:
     def run_enhanced_models(self, df):
         """Run enhanced models (XGBoost, LightGBM, CatBoost)."""
         if not ENHANCED_AVAILABLE:
-            print("\n⏭️ Skipping enhanced models (not available)")
+            print("\n[SKIP] Skipping enhanced models (not available)")
             return
             
         print("\n" + "="*60)
-        print("🚀 PHASE 2: Enhanced Models (XGBoost, LightGBM, CatBoost)")
+        print(">>> PHASE 2: Enhanced Models (XGBoost, LightGBM, CatBoost)")
         print("="*60)
         
         # Prepare data for enhanced detector
@@ -143,11 +143,11 @@ class IntegratedFraudPipeline:
     def run_deep_learning_models(self, df):
         """Run deep learning models."""
         if not DEEP_LEARNING_AVAILABLE:
-            print("\n⏭️ Skipping deep learning models (not available)")
+            print("\n[SKIP] Skipping deep learning models (not available)")
             return
             
         print("\n" + "="*60)
-        print("🚀 PHASE 3: Deep Learning Models")
+        print(">>> PHASE 3: Deep Learning Models")
         print("="*60)
         
         self.deep_learning_detector = DeepLearningDetector()
@@ -171,11 +171,11 @@ class IntegratedFraudPipeline:
     def run_graph_neural_network(self, df):
         """Run Graph Neural Network (simplified version)."""
         if not GNN_AVAILABLE:
-            print("\n⏭️ Skipping graph neural network (not available)")
+            print("\n[SKIP] Skipping graph neural network (not available)")
             return
             
         print("\n" + "="*60)
-        print("🚀 PHASE 4: Graph Neural Network")
+        print(">>> PHASE 4: Graph Neural Network")
         print("="*60)
         
         try:
@@ -190,7 +190,7 @@ class IntegratedFraudPipeline:
             # Train GNN (with smaller sample for speed)
             self.gnn_system.train(df.sample(n=min(50000, len(df))), traditional_models)
             
-            print("✅ Graph Neural Network trained successfully")
+            print("[OK] Graph Neural Network trained successfully")
             
             # Add approximate results
             self.all_results['graph_neural_network'] = {
@@ -200,16 +200,16 @@ class IntegratedFraudPipeline:
             }
             
         except Exception as e:
-            print(f"⚠️ GNN training skipped due to: {str(e)}")
+            print(f"WARNING: GNN training skipped due to: {str(e)}")
     
     def run_model_calibration(self):
         """Run model calibration."""
         if not CALIBRATION_AVAILABLE:
-            print("\n⏭️ Skipping model calibration (not available)")
+            print("\n[SKIP] Skipping model calibration (not available)")
             return
             
         print("\n" + "="*60)
-        print("🚀 PHASE 5: Model Calibration")
+        print(">>> PHASE 5: Model Calibration")
         print("="*60)
         
         try:
@@ -222,16 +222,16 @@ class IntegratedFraudPipeline:
             if best_models:
                 self.calibration_pipeline = ModelCalibrationPipeline()
                 # Note: Full calibration would require the original training data
-                print("✅ Model calibration configured")
+                print("[OK] Model calibration configured")
                 print(f"   Models ready for calibration: {list(best_models.keys())}")
             
         except Exception as e:
-            print(f"⚠️ Calibration skipped due to: {str(e)}")
+            print(f"WARNING: Calibration skipped due to: {str(e)}")
     
     def create_ensemble(self):
         """Create ensemble of best models."""
         print("\n" + "="*60)
-        print("🚀 PHASE 6: Ensemble Creation")
+        print(">>> PHASE 6: Ensemble Creation")
         print("="*60)
         
         # Select top 5 models by F1 score
@@ -241,7 +241,7 @@ class IntegratedFraudPipeline:
             reverse=True
         )[:5]
         
-        print("🏆 Top 5 models for ensemble:")
+        print("[TOP] Top 5 models for ensemble:")
         for i, (name, metrics) in enumerate(sorted_models, 1):
             print(f"   {i}. {name}: F1={metrics['f1_score']:.4f}")
         
@@ -255,12 +255,12 @@ class IntegratedFraudPipeline:
             'avg_precision': 0.90
         }
         
-        print(f"\n✅ Ensemble created with estimated F1: {ensemble_f1 * 1.02:.4f}")
+        print(f"\n[OK] Ensemble created with estimated F1: {ensemble_f1 * 1.02:.4f}")
     
     def generate_final_report(self):
         """Generate comprehensive final report."""
         print("\n" + "="*60)
-        print("📊 FINAL COMPREHENSIVE REPORT")
+        print("[DATA] FINAL COMPREHENSIVE REPORT")
         print("="*60)
         
         # Create comparison dataframe
@@ -276,7 +276,7 @@ class IntegratedFraudPipeline:
         df_report = pd.DataFrame(report_data)
         df_report = df_report.sort_values('F1-Score', ascending=False)
         
-        print("\n🏆 Model Performance Ranking:")
+        print("\n[TOP] Model Performance Ranking:")
         print(df_report.to_string(index=False))
         
         # Save comprehensive results
@@ -290,22 +290,22 @@ class IntegratedFraudPipeline:
             joblib.dump(self.basic_pipeline.scaler, 'scaler.joblib')
             joblib.dump(self.all_results, 'model_results.joblib')
         
-        print("\n✅ All models and results saved!")
-        print(f"📊 Total models trained: {len(self.all_models)}")
-        print(f"🎯 Best model: {df_report.iloc[0]['Model']} (F1: {df_report.iloc[0]['F1-Score']})")
+        print("\n[OK] All models and results saved!")
+        print(f"[DATA] Total models trained: {len(self.all_models)}")
+        print(f"[TARGET] Best model: {df_report.iloc[0]['Model']} (F1: {df_report.iloc[0]['F1-Score']})")
         
         return df_report
     
     def run_full_pipeline(self, run_deep_learning=True, run_gnn=True):
         """Run the complete integrated pipeline."""
-        print("\n" + "🚀"*20)
+        print("\n" + ">>>"*20)
         print("INTEGRATED FRAUD DETECTION PIPELINE")
-        print("🚀"*20)
+        print(">>>"*20)
         
         # Load data
-        print("\n📊 Loading dataset...")
+        print("\n[DATA] Loading dataset...")
         df = pd.read_csv('creditcard.csv')
-        print(f"✅ Loaded {len(df):,} transactions")
+        print(f"[OK] Loaded {len(df):,} transactions")
         
         # Phase 1: Basic Models
         X_train, X_test, y_train, y_test = self.run_basic_models(df)
@@ -317,13 +317,13 @@ class IntegratedFraudPipeline:
         if run_deep_learning:
             self.run_deep_learning_models(df)
         else:
-            print("\n⏭️ Skipping deep learning models (set run_deep_learning=True to enable)")
+            print("\n[SKIP] Skipping deep learning models (set run_deep_learning=True to enable)")
         
         # Phase 4: Graph Neural Network (optional - takes longer)
         if run_gnn:
             self.run_graph_neural_network(df)
         else:
-            print("\n⏭️ Skipping GNN (set run_gnn=True to enable)")
+            print("\n[SKIP] Skipping GNN (set run_gnn=True to enable)")
         
         # Phase 5: Model Calibration
         self.run_model_calibration()
@@ -334,9 +334,9 @@ class IntegratedFraudPipeline:
         # Final Report
         report_df = self.generate_final_report()
         
-        print("\n" + "🎉"*20)
+        print("\n" + "***"*20)
         print("PIPELINE COMPLETED SUCCESSFULLY!")
-        print("🎉"*20)
+        print("***"*20)
         
         return report_df
 
@@ -359,7 +359,7 @@ def main():
     
     # Run with options
     if args.quick:
-        print("⚡ Running in QUICK MODE (Basic + Enhanced models only)")
+        print("[FAST] Running in QUICK MODE (Basic + Enhanced models only)")
         report = pipeline.run_full_pipeline(run_deep_learning=False, run_gnn=False)
     else:
         report = pipeline.run_full_pipeline(

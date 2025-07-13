@@ -23,7 +23,7 @@ try:
     from integrated_fraud_pipeline import IntegratedFraudPipeline
     BASE_AVAILABLE = True
 except ImportError:
-    print("⚠️ Base integrated pipeline not available, using simplified version")
+    print("Warning: Base integrated pipeline not available, using simplified version")
     BASE_AVAILABLE = False
     
     # Fallback base class
@@ -38,28 +38,28 @@ try:
     from heterogeneous_gnn import HeterogeneousFraudDetector as HeterogeneousGNNSystem
     HETERO_GNN_AVAILABLE = True
 except ImportError:
-    print("⚠️ Heterogeneous GNN not available")
+    print("Warning: Heterogeneous GNN not available")
     HETERO_GNN_AVAILABLE = False
 
 try:
     from online_streaming_system import StreamingFraudDetector as OnlineStreamingFraudDetector
     STREAMING_AVAILABLE = True
 except ImportError:
-    print("⚠️ Online streaming system not available")
+    print("Warning: Online streaming system not available")
     STREAMING_AVAILABLE = False
 
 try:
     from hybrid_ensemble_system import HybridEnsembleSystem
     HYBRID_AVAILABLE = True
 except ImportError:
-    print("⚠️ Hybrid ensemble system not available")
+    print("Warning: Hybrid ensemble system not available")
     HYBRID_AVAILABLE = False
 
 try:
     from enhanced_active_learning import EnhancedActiveLearner as EnhancedActiveLearningSystem
     ACTIVE_LEARNING_AVAILABLE = True
 except ImportError:
-    print("⚠️ Active learning system not available")
+    print("Warning: Active learning system not available")
     ACTIVE_LEARNING_AVAILABLE = False
 
 # Always import these core components
@@ -86,18 +86,18 @@ class AdvancedIntegratedPipeline(IntegratedFraudPipeline):
         self.active_learning = None
         
         # Print configuration
-        print("\n🔧 Advanced Pipeline Configuration:")
-        print(f"   Base Pipeline: {'✅' if BASE_AVAILABLE else '❌'}")
-        print(f"   Heterogeneous GNN: {'✅' if HETERO_GNN_AVAILABLE else '❌'}")
-        print(f"   Streaming System: {'✅' if STREAMING_AVAILABLE else '❌'}")
-        print(f"   Hybrid Ensemble: {'✅' if HYBRID_AVAILABLE else '❌'}")
-        print(f"   Active Learning: {'✅' if ACTIVE_LEARNING_AVAILABLE else '❌'}")
+        print("\n[CONFIG] Advanced Pipeline Configuration:")
+        print(f"   Base Pipeline: {'[OK]' if BASE_AVAILABLE else '[ERROR]'}")
+        print(f"   Heterogeneous GNN: {'[OK]' if HETERO_GNN_AVAILABLE else '[ERROR]'}")
+        print(f"   Streaming System: {'[OK]' if STREAMING_AVAILABLE else '[ERROR]'}")
+        print(f"   Hybrid Ensemble: {'[OK]' if HYBRID_AVAILABLE else '[ERROR]'}")
+        print(f"   Active Learning: {'[OK]' if ACTIVE_LEARNING_AVAILABLE else '[ERROR]'}")
         print()
         
     def run_basic_pipeline_fallback(self, df):
         """Fallback method to run basic models if integrated pipeline fails."""
         print("\n" + "="*60)
-        print("🚀 PHASE 1: Basic Machine Learning Models (Fallback)")
+        print(">>> PHASE 1: Basic Machine Learning Models (Fallback)")
         print("="*60)
         
         self.basic_pipeline = FraudDetectionPipeline()
@@ -121,17 +121,17 @@ class AdvancedIntegratedPipeline(IntegratedFraudPipeline):
     def run_heterogeneous_gnn(self, df):
         """Run Heterogeneous GNN with multiple relationship types."""
         if not HETERO_GNN_AVAILABLE:
-            print("\n⏭️ Skipping Heterogeneous GNN (not available)")
+            print("\n[SKIP] Skipping Heterogeneous GNN (not available)")
             return
             
         print("\n" + "="*60)
-        print("🌐 PHASE 7: Heterogeneous Graph Neural Network")
+        print("[NETWORK] PHASE 7: Heterogeneous Graph Neural Network")
         print("="*60)
         
         try:
             self.hetero_gnn = HeterogeneousGNNSystem()
             
-            print("📊 Building heterogeneous graphs...")
+            print("[DATA] Building heterogeneous graphs...")
             print("   - Node types: Users, Cards, Merchants, Transactions")
             print("   - Edge types: User-Card, Card-Transaction, Transaction-Merchant")
             
@@ -147,7 +147,7 @@ class AdvancedIntegratedPipeline(IntegratedFraudPipeline):
             )
             
             # Train heterogeneous GNN
-            print("🧠 Training Heterogeneous GAT model...")
+            print("[AI] Training Heterogeneous GAT model...")
             
             # Note: Actual implementation would require proper graph construction
             # This is a placeholder showing the structure
@@ -159,33 +159,33 @@ class AdvancedIntegratedPipeline(IntegratedFraudPipeline):
                 'avg_precision': 0.87
             }
             
-            print("✅ Heterogeneous GNN completed")
+            print("[OK] Heterogeneous GNN completed")
             print("   - F1-Score: 0.89")
             print("   - ROC-AUC: 0.95")
             
         except Exception as e:
-            print(f"⚠️ Heterogeneous GNN failed: {str(e)}")
+            print(f"WARNING: Heterogeneous GNN failed: {str(e)}")
     
     def run_online_streaming_system(self, df):
         """Setup online streaming fraud detection."""
         if not STREAMING_AVAILABLE:
-            print("\n⏭️ Skipping Online Streaming System (not available)")
+            print("\n[SKIP] Skipping Online Streaming System (not available)")
             return
             
         print("\n" + "="*60)
-        print("🌊 PHASE 8: Online Streaming System")
+        print("[STREAM] PHASE 8: Online Streaming System")
         print("="*60)
         
         try:
             self.streaming_system = OnlineStreamingFraudDetector()
             
-            print("📡 Configuring streaming system...")
+            print("[STREAM] Configuring streaming system...")
             print("   - Window size: 1000 transactions")
             print("   - Update frequency: Every 100 transactions")
             print("   - Drift detection: ADWIN + KSWIN")
             
             # Simulate streaming
-            print("\n🔄 Simulating stream processing...")
+            print("\n[PROCESS] Simulating stream processing...")
             
             # Process last 5000 transactions as stream
             stream_data = df.tail(5000)
@@ -199,38 +199,48 @@ class AdvancedIntegratedPipeline(IntegratedFraudPipeline):
                 'latency_ms': 12
             }
             
-            print("✅ Streaming system configured")
+            print("[OK] Streaming system configured")
             print("   - Average latency: 12ms per transaction")
             print("   - Drift events detected: 2")
             
         except Exception as e:
-            print(f"⚠️ Streaming system failed: {str(e)}")
+            print(f"WARNING: Streaming system failed: {str(e)}")
     
     def run_hybrid_ensemble(self):
         """Create advanced hybrid ensemble with meta-learning."""
         if not HYBRID_AVAILABLE:
-            print("\n⏭️ Skipping Hybrid Ensemble (not available)")
+            print("\n[SKIP] Skipping Hybrid Ensemble (not available)")
             return
             
         print("\n" + "="*60)
-        print("🎭 PHASE 9: Hybrid Ensemble with Meta-Learning")
+        print("[ENSEMBLE] PHASE 9: Hybrid Ensemble with Meta-Learning")
         print("="*60)
         
         try:
-            self.hybrid_ensemble = HybridEnsembleSystem()
+            # Prepare base models for hybrid ensemble
+            base_models = {
+                name: model for name, model in self.all_models.items() 
+                if model is not None and hasattr(model, 'predict_proba')
+            }
             
-            print("🧩 Building context-aware ensemble...")
+            if not base_models:
+                print("WARNING: No base models available for hybrid ensemble")
+                return
+                
+            self.hybrid_ensemble = HybridEnsembleSystem(base_models)
+            
+            print("[BUILD] Building context-aware ensemble...")
             
             # Count available models
-            available_models = len([m for m in self.all_models.values() if m is not None])
+            available_models = len(base_models)
             print(f"   - Base models available: {available_models}")
             print("   - Meta-features: Transaction amount, Time of day, Merchant risk")
             print("   - Meta-learner: LightGBM")
             
-            print("\n🎯 Learning optimal model weights...")
-            print("   - High-value transactions → Deep Learning (0.45)")
-            print("   - Rapid sequences → GNN (0.35)")
-            print("   - Normal patterns → XGBoost (0.20)")
+            print("\n[TARGET] Learning optimal model weights...")
+            print("   - High-value transactions -> Deep Learning (0.45)")
+            print("   - Rapid sequences -> GNN (0.35)")
+            print("   - Normal patterns -> XGBoost (0.20)")
             
             # Calculate ensemble performance
             if self.all_results:
@@ -245,37 +255,37 @@ class AdvancedIntegratedPipeline(IntegratedFraudPipeline):
                 'avg_precision': 0.89
             }
             
-            print(f"\n✅ Hybrid ensemble created")
+            print(f"\n[OK] Hybrid ensemble created")
             print(f"   - F1-Score: {ensemble_f1:.4f}")
             print("   - Context-aware model selection enabled")
             
         except Exception as e:
-            print(f"⚠️ Hybrid ensemble failed: {str(e)}")
+            print(f"WARNING: Hybrid ensemble failed: {str(e)}")
     
     def run_active_learning_system(self):
         """Setup active learning for continuous improvement."""
         if not ACTIVE_LEARNING_AVAILABLE:
-            print("\n⏭️ Skipping Active Learning System (not available)")
+            print("\n[SKIP] Skipping Active Learning System (not available)")
             return
             
         print("\n" + "="*60)
-        print("🎓 PHASE 10: Active Learning System")
+        print("[LEARN] PHASE 10: Active Learning System")
         print("="*60)
         
         try:
             self.active_learning = EnhancedActiveLearningSystem()
             
-            print("🔍 Configuring active learning...")
+            print("[SEARCH] Configuring active learning...")
             print("   - Strategy: Uncertainty + Diversity sampling")
             print("   - Query budget: 100 samples per day")
             print("   - Retraining: Incremental updates")
             
-            print("\n📊 Active learning simulation:")
+            print("\n[DATA] Active learning simulation:")
             print("   - Uncertainty threshold: 0.3-0.7 probability")
             print("   - High uncertainty samples: 523")
             print("   - Selected for review: 100")
             
-            print("\n👥 Expected outcomes:")
+            print("\n[TEAM] Expected outcomes:")
             print("   - False positive reduction: 15% per month")
             print("   - Model improvement: 2% F1 per month")
             print("   - Human effort: 100 reviews/day")
@@ -287,15 +297,15 @@ class AdvancedIntegratedPipeline(IntegratedFraudPipeline):
                 'improvement_rate': '2% per month'
             }
             
-            print("\n✅ Active learning system configured")
+            print("\n[OK] Active learning system configured")
             
         except Exception as e:
-            print(f"⚠️ Active learning failed: {str(e)}")
+            print(f"WARNING: Active learning failed: {str(e)}")
     
     def create_production_config(self):
         """Create production deployment configuration."""
         print("\n" + "="*60)
-        print("🚀 PRODUCTION CONFIGURATION")
+        print(">>> PRODUCTION CONFIGURATION")
         print("="*60)
         
         config = {
@@ -320,7 +330,7 @@ class AdvancedIntegratedPipeline(IntegratedFraudPipeline):
             }
         }
         
-        print("\n📋 Deployment Architecture:")
+        print("\n[CONFIG] Deployment Architecture:")
         print("1. API Layer: 3 servers with load balancing")
         print("2. Model Serving: Real-time + Batch hybrid")
         print("3. Monitoring: Prometheus + Grafana dashboards")
@@ -334,7 +344,7 @@ class AdvancedIntegratedPipeline(IntegratedFraudPipeline):
     def generate_final_report(self):
         """Generate comprehensive report including all systems."""
         print("\n" + "="*60)
-        print("📊 FINAL COMPREHENSIVE REPORT")
+        print("[DATA] FINAL COMPREHENSIVE REPORT")
         print("="*60)
         
         # Create report dataframe
@@ -352,7 +362,7 @@ class AdvancedIntegratedPipeline(IntegratedFraudPipeline):
             df_report = pd.DataFrame(report_data)
             df_report = df_report.sort_values('F1-Score', ascending=False)
             
-            print("\n🏆 Model Performance Ranking:")
+            print("\n[TOP] Model Performance Ranking:")
             print(df_report.to_string(index=False))
         
         # Save all results
@@ -366,11 +376,11 @@ class AdvancedIntegratedPipeline(IntegratedFraudPipeline):
                 joblib.dump(self.basic_pipeline.scaler, 'scaler.joblib')
         joblib.dump(self.all_results, 'model_results.joblib')
         
-        print("\n✅ All models and results saved!")
-        print("✅ Dashboard-compatible files created!")
+        print("\n[OK] All models and results saved!")
+        print("[OK] Dashboard-compatible files created!")
         
         # Summary statistics
-        print(f"\n📊 Summary:")
+        print(f"\n[DATA] Summary:")
         print(f"   Total models evaluated: {len(self.all_results)}")
         if self.all_results:
             best_model = max(self.all_results.items(), key=lambda x: x[1].get('f1_score', 0))
@@ -380,33 +390,33 @@ class AdvancedIntegratedPipeline(IntegratedFraudPipeline):
     
     def run_advanced_pipeline(self, df=None):
         """Run the complete advanced pipeline."""
-        print("\n" + "🚀"*20)
+        print("\n" + ">>>"*20)
         print("ADVANCED INTEGRATED FRAUD DETECTION PIPELINE")
-        print("🚀"*20)
+        print(">>>"*20)
         
         # Print GPU configuration
         gpu_config.print_config()
         
         # Load data if not provided
         if df is None:
-            print("\n📊 Loading dataset...")
+            print("\n[DATA] Loading dataset...")
             try:
                 df = pd.read_csv('creditcard.csv')
-                print(f"✅ Loaded {len(df):,} transactions")
+                print(f"[OK] Loaded {len(df):,} transactions")
             except FileNotFoundError:
-                print("❌ Error: creditcard.csv not found!")
+                print("[ERROR] Error: creditcard.csv not found!")
                 print("Please download from: https://www.kaggle.com/mlg-ulb/creditcardfraud")
                 return None
         
         # Run base pipeline
         if BASE_AVAILABLE:
             try:
-                print("\n📌 Running base integrated pipeline...")
+                print("\n[NOTE] Running base integrated pipeline...")
                 # Note: This would call the parent class method
                 # For now, we'll use fallback
                 self.run_basic_pipeline_fallback(df)
             except Exception as e:
-                print(f"⚠️ Base pipeline failed: {str(e)}")
+                print(f"WARNING: Base pipeline failed: {str(e)}")
                 print("Using fallback method...")
                 self.run_basic_pipeline_fallback(df)
         else:
@@ -424,9 +434,9 @@ class AdvancedIntegratedPipeline(IntegratedFraudPipeline):
         # Generate final report
         report_df = self.generate_final_report()
         
-        print("\n" + "🎉"*20)
+        print("\n" + "***"*20)
         print("ADVANCED PIPELINE COMPLETED SUCCESSFULLY!")
-        print("🎉"*20)
+        print("***"*20)
         
         return report_df
 
@@ -448,12 +458,12 @@ def main():
     pipeline = AdvancedIntegratedPipeline()
     
     # Load data
-    print("\n📊 Loading dataset...")
+    print("\n[DATA] Loading dataset...")
     try:
         df = pd.read_csv('creditcard.csv')
-        print(f"✅ Loaded {len(df):,} transactions")
+        print(f"[OK] Loaded {len(df):,} transactions")
     except FileNotFoundError:
-        print("❌ Error: creditcard.csv not found!")
+        print("[ERROR] Error: creditcard.csv not found!")
         print("Please download from: https://www.kaggle.com/mlg-ulb/creditcardfraud")
         return None, None
     

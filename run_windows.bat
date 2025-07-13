@@ -55,11 +55,12 @@ echo 5. Professional Dashboard (Interactive)
 echo 6. API Server
 echo 7. GPU Configuration Test
 echo 8. Jupyter Notebook Tutorials
-echo 9. Install/Update Requirements
+echo 9. Check Missing Packages
+echo 10. Install ALL Requirements
 echo 0. Exit
 echo.
 
-set /p choice=Enter your choice (0-9): 
+set /p choice=Enter your choice (0-10): 
 
 if "%choice%"=="1" (
     echo.
@@ -136,8 +137,16 @@ if "%choice%"=="8" (
 
 if "%choice%"=="9" (
     echo.
-    echo Installing/Updating Requirements...
-    pip install -r requirements.txt
+    echo Checking for Missing Packages...
+    python check_requirements.py
+    pause
+    goto menu
+)
+
+if "%choice%"=="10" (
+    echo.
+    echo Installing ALL Requirements...
+    python install_all.py
     pause
     goto menu
 )

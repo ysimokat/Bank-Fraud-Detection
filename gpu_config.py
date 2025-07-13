@@ -51,7 +51,7 @@ class GPUConfig:
                     'reserved_gb': round(mem_reserved, 2)
                 }
             
-            logger.info(f"✅ CUDA GPU detected: {self.device_name}")
+            logger.info(f"[OK] CUDA GPU detected: {self.device_name}")
             logger.info(f"   Number of GPUs: {self.gpu_count}")
             logger.info(f"   Memory: {self.gpu_memory}")
             
@@ -61,7 +61,7 @@ class GPUConfig:
             self.device = torch.device('mps')
             self.device_name = "Apple Silicon GPU (MPS)"
             self.gpu_count = 1
-            logger.info(f"✅ Apple Silicon GPU detected (MPS)")
+            logger.info(f"[OK] Apple Silicon GPU detected (MPS)")
             
         # Check for ROCm (AMD GPUs)
         elif hasattr(torch, 'hip') and torch.hip.is_available():
@@ -69,13 +69,13 @@ class GPUConfig:
             self.device = torch.device('hip')
             self.device_name = "AMD GPU (ROCm)"
             self.gpu_count = 1
-            logger.info(f"✅ AMD GPU detected (ROCm)")
+            logger.info(f"[OK] AMD GPU detected (ROCm)")
             
         else:
             # Fallback to CPU
             self.device = torch.device('cpu')
             self.device_name = "CPU"
-            logger.warning("⚠️ No GPU detected. Using CPU for computation.")
+            logger.warning("WARNING: No GPU detected. Using CPU for computation.")
             logger.info("   For better performance, consider using a GPU.")
             
     def get_device(self):
@@ -88,7 +88,7 @@ class GPUConfig:
             # Enable TF32 on Ampere GPUs
             torch.backends.cuda.matmul.allow_tf32 = True
             torch.backends.cudnn.allow_tf32 = True
-            logger.info("✅ Mixed precision training enabled (TF32)")
+            logger.info("[OK] Mixed precision training enabled (TF32)")
             return True
         return False
     
@@ -102,7 +102,7 @@ class GPUConfig:
             # Clear cache
             torch.cuda.empty_cache()
             
-            logger.info("✅ GPU memory optimization enabled")
+            logger.info("[OK] GPU memory optimization enabled")
             return True
         return False
     
@@ -119,7 +119,7 @@ class GPUConfig:
                 # MPS doesn't have specific seed setting
                 pass
                 
-        logger.info(f"✅ Random seeds set to {seed}")
+        logger.info(f"[OK] Random seeds set to {seed}")
     
     def get_optimal_batch_size(self, model_type='standard'):
         """Get recommended batch size based on GPU memory."""
@@ -196,7 +196,7 @@ class GPUConfig:
     def print_config(self):
         """Print GPU configuration details."""
         print("\n" + "="*60)
-        print("🖥️  GPU Configuration")
+        print("[SYSTEM]  GPU Configuration")
         print("="*60)
         print(f"Device: {self.device}")
         print(f"Device Name: {self.device_name}")
@@ -227,7 +227,7 @@ def setup_gpu_for_sklearn():
         # For RAPIDS cuML (NVIDIA GPU acceleration for scikit-learn)
         try:
             import cuml
-            logger.info("✅ RAPIDS cuML available for GPU-accelerated scikit-learn")
+            logger.info("[OK] RAPIDS cuML available for GPU-accelerated scikit-learn")
             return True
         except ImportError:
             logger.info("ℹ️ Install RAPIDS cuML for GPU-accelerated scikit-learn algorithms")
@@ -248,7 +248,7 @@ def get_xgboost_params():
             'predictor': 'gpu_predictor',
             'gpu_id': 0
         })
-        logger.info("✅ XGBoost GPU acceleration enabled")
+        logger.info("[OK] XGBoost GPU acceleration enabled")
     else:
         params['tree_method'] = 'hist'
         
@@ -269,7 +269,7 @@ def get_lightgbm_params():
             'gpu_platform_id': 0,
             'gpu_device_id': 0
         })
-        logger.info("✅ LightGBM GPU acceleration enabled")
+        logger.info("[OK] LightGBM GPU acceleration enabled")
     else:
         params['device'] = 'cpu'
         
@@ -281,12 +281,12 @@ if __name__ == "__main__":
     
     # Test GPU functionality
     if gpu_config.gpu_available:
-        print("\n🧪 Testing GPU functionality...")
+        print("\n[TEST] Testing GPU functionality...")
         try:
             # Create a small tensor and perform operation
             test_tensor = torch.randn(1000, 1000).to(gpu_config.device)
             result = torch.matmul(test_tensor, test_tensor)
-            print("✅ GPU computation test successful!")
+            print("[OK] GPU computation test successful!")
             
             # Memory test
             if gpu_config.device.type == 'cuda':
@@ -294,4 +294,4 @@ if __name__ == "__main__":
                 torch.cuda.empty_cache()
                 
         except Exception as e:
-            print(f"❌ GPU test failed: {e}")
+            print(f"[ERROR] GPU test failed: {e}")

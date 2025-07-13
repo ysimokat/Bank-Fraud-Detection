@@ -274,12 +274,12 @@ def load_models():
 def show_intro_modal():
     """Show introduction modal with scenario and persona selection."""
     if st.session_state.user_persona is None or st.session_state.scenario is None:
-        st.markdown("# 🎯 Welcome to FraudGuard Pro")
+        st.markdown("# [TARGET] Welcome to FraudGuard Pro")
         st.markdown("### Your Professional Fraud Detection Command Center")
         
         st.markdown("""
         <div class="scenario-card">
-            <h4>🎭 Choose Your Perspective</h4>
+            <h4>[ENSEMBLE] Choose Your Perspective</h4>
             <p>Select your role to customize the dashboard experience for your specific needs and goals.</p>
         </div>
         """, unsafe_allow_html=True)
@@ -288,7 +288,7 @@ def show_intro_modal():
         col1, col2 = st.columns(2)
         
         with col1:
-            st.markdown("#### 👤 Select Your Role")
+            st.markdown("#### [USER] Select Your Role")
             selected_persona = st.selectbox(
                 "Choose your user persona:",
                 list(USER_PERSONAS.keys()),
@@ -324,7 +324,7 @@ def show_intro_modal():
                 </div>
                 """, unsafe_allow_html=True)
         
-        if st.button("🚀 Enter Dashboard", type="primary", use_container_width=True):
+        if st.button(">>> Enter Dashboard", type="primary", use_container_width=True):
             st.session_state.user_persona = selected_persona
             st.session_state.scenario = selected_scenario
             st.rerun()
@@ -385,7 +385,7 @@ def generate_realistic_transaction(scenario_config):
 
 def create_streaming_simulator():
     """Create real-time transaction streaming simulator."""
-    st.markdown("### 🔄 Live Transaction Stream")
+    st.markdown("### [PROCESS] Live Transaction Stream")
     
     scenario_config = SCENARIOS[st.session_state.scenario]
     
@@ -457,7 +457,7 @@ def display_transaction_stream():
     
     for transaction in reversed(st.session_state.transaction_log[-10:]):  # Show last 10
         card_class = "fraud-transaction" if transaction['is_fraud'] else "streaming-transaction"
-        risk_emoji = "🚨" if transaction['is_fraud'] else "✅"
+        risk_emoji = "[ALERT]" if transaction['is_fraud'] else "[OK]"
         
         st.markdown(f"""
         <div class="{card_class}">
@@ -472,7 +472,7 @@ def display_transaction_stream():
     
     # Fraud alerts panel
     if st.session_state.fraud_alerts:
-        st.markdown("#### 🚨 Active Fraud Alerts")
+        st.markdown("#### [ALERT] Active Fraud Alerts")
         
         for alert in st.session_state.fraud_alerts[-5:]:  # Show last 5 alerts
             st.markdown(f"""
@@ -484,7 +484,7 @@ def display_transaction_stream():
 
 def create_shap_explanation():
     """Create SHAP-based model explanations."""
-    st.markdown("### 🔍 Explainable AI - SHAP Analysis")
+    st.markdown("### [SEARCH] Explainable AI - SHAP Analysis")
     
     df = load_data()
     models, scaler, results = load_models()
@@ -500,7 +500,7 @@ def create_shap_explanation():
     explanation_type = st.radio("Explanation Type:", ["Single Transaction", "Feature Importance"])
     
     if explanation_type == "Single Transaction":
-        st.markdown("#### 🎯 Local Explanation - Single Transaction")
+        st.markdown("#### [TARGET] Local Explanation - Single Transaction")
         
         # Select or generate a transaction
         col1, col2 = st.columns(2)
@@ -549,7 +549,7 @@ def create_shap_explanation():
                 if prediction_class == "FRAUD":
                     st.markdown(f"""
                     <div class="alert-card">
-                        <h4>🚨 FRAUD DETECTED</h4>
+                        <h4>[ALERT] FRAUD DETECTED</h4>
                         <p>Fraud Probability: {fraud_probability:.3f}</p>
                         <p>Confidence: {confidence:.3f}</p>
                     </div>
@@ -557,14 +557,14 @@ def create_shap_explanation():
                 else:
                     st.markdown(f"""
                     <div class="success-card">
-                        <h4>✅ LEGITIMATE TRANSACTION</h4>
+                        <h4>[OK] LEGITIMATE TRANSACTION</h4>
                         <p>Fraud Probability: {fraud_probability:.3f}</p>
                         <p>Confidence: {confidence:.3f}</p>
                     </div>
                     """, unsafe_allow_html=True)
                 
                 # SHAP explanation (simulated for demo)
-                st.markdown("#### 📊 Feature Contributions")
+                st.markdown("#### [DATA] Feature Contributions")
                 
                 # Simulate SHAP values for demo
                 feature_names = ['Amount', 'Time', 'V1', 'V2', 'V3', 'V4']
@@ -585,7 +585,7 @@ def create_shap_explanation():
                 st.plotly_chart(fig, use_container_width=True)
                 
                 # Counterfactual explanation
-                st.markdown("#### 🔄 Counterfactual Analysis")
+                st.markdown("#### [PROCESS] Counterfactual Analysis")
                 st.markdown(f"""
                 <div class="shap-explanation">
                     <h5>What would make this transaction {('legitimate' if prediction_class == 'FRAUD' else 'fraudulent')}?</h5>
@@ -601,7 +601,7 @@ def create_shap_explanation():
                 st.error(f"Error in prediction: {str(e)}")
     
     else:  # Feature Importance
-        st.markdown("#### 🏆 Global Feature Importance")
+        st.markdown("#### [TOP] Global Feature Importance")
         
         model = models[model_name]
         
@@ -623,7 +623,7 @@ def create_shap_explanation():
             
             # Insights
             top_features = importance_df.tail(5)
-            st.markdown("#### 🎯 Key Insights")
+            st.markdown("#### [TARGET] Key Insights")
             
             for _, row in top_features.iterrows():
                 st.markdown(f"- **{row['Feature']}**: {row['Importance']:.4f} importance score")
@@ -632,7 +632,7 @@ def create_shap_explanation():
 
 def create_business_impact_calculator():
     """Create interactive business impact and ROI calculator."""
-    st.markdown("### 💰 Business Impact Calculator")
+    st.markdown("### [MONEY] Business Impact Calculator")
     
     df = load_data()
     models, scaler, results = load_models()
@@ -681,7 +681,7 @@ def create_business_impact_calculator():
         )
     
     # Advanced parameters
-    with st.expander("🔧 Advanced Parameters"):
+    with st.expander("[CONFIG] Advanced Parameters"):
         col1, col2, col3 = st.columns(3)
         
         with col1:
@@ -707,7 +707,7 @@ def create_business_impact_calculator():
             )
     
     # Calculate ROI for each model
-    st.markdown("#### 📊 Model Performance vs Business Impact")
+    st.markdown("#### [DATA] Model Performance vs Business Impact")
     
     roi_data = []
     
@@ -805,7 +805,7 @@ def create_business_impact_calculator():
     
     st.markdown(f"""
     <div class="insight-box">
-        <h4>🏆 Recommended Model: {best_model['Model']}</h4>
+        <h4>[TOP] Recommended Model: {best_model['Model']}</h4>
         <p><strong>Annual Benefit:</strong> ${best_model['Annual_Benefit']:,.0f}</p>
         <p><strong>ROI:</strong> {best_model['ROI_Percentage']:.1f}%</p>
         <p><strong>Daily Alerts:</strong> {best_model['Total_Alerts']:.0f} (Alert Precision: {best_model['Alert_Precision']:.1f}%)</p>
@@ -814,7 +814,7 @@ def create_business_impact_calculator():
     """, unsafe_allow_html=True)
     
     # Sensitivity analysis
-    st.markdown("#### 📈 Sensitivity Analysis")
+    st.markdown("#### [CHART] Sensitivity Analysis")
     
     # Show impact of changing key parameters
     sensitivity_param = st.selectbox("Parameter to Analyze:", 
@@ -885,7 +885,7 @@ def create_business_impact_calculator():
 
 def create_model_monitoring_dashboard():
     """Create model monitoring and drift detection dashboard."""
-    st.markdown("### 📈 Model Monitoring & Drift Detection")
+    st.markdown("### [CHART] Model Monitoring & Drift Detection")
     
     # Generate simulated monitoring data
     end_date = datetime.now()
@@ -974,7 +974,7 @@ def create_model_monitoring_dashboard():
         """, unsafe_allow_html=True)
     
     # Performance trends
-    st.markdown("#### 📊 Performance Trends")
+    st.markdown("#### [DATA] Performance Trends")
     
     col1, col2 = st.columns(2)
     
@@ -1019,7 +1019,7 @@ def create_model_monitoring_dashboard():
         st.plotly_chart(fig, use_container_width=True)
     
     # Alerts and recommendations
-    st.markdown("#### 🚨 Alerts & Recommendations")
+    st.markdown("#### [ALERT] Alerts & Recommendations")
     
     # Generate alerts based on current metrics
     alerts = []
@@ -1053,18 +1053,18 @@ def create_model_monitoring_dashboard():
         })
     
     if not alerts:
-        st.success("✅ All systems operating normally. No alerts detected.")
+        st.success("[OK] All systems operating normally. No alerts detected.")
     else:
         for alert in alerts:
             if alert['type'] == 'critical':
-                st.error(f"🚨 **CRITICAL**: {alert['message']}")
+                st.error(f"[ALERT] **CRITICAL**: {alert['message']}")
                 st.info(f"**Action Required**: {alert['action']}")
             else:
-                st.warning(f"⚠️ **WARNING**: {alert['message']}")
+                st.warning(f"WARNING: **WARNING**: {alert['message']}")
                 st.info(f"**Recommended Action**: {alert['action']}")
     
     # Feature importance drift
-    st.markdown("#### 🔄 Feature Importance Changes")
+    st.markdown("#### [PROCESS] Feature Importance Changes")
     
     # Simulate feature importance drift
     features = ['V14', 'V4', 'V11', 'V12', 'V10', 'Amount', 'V17', 'V21']
@@ -1102,23 +1102,23 @@ def main():
     
     # Navigation
     pages = {
-        "🎯 Command Center": show_command_center,
-        "🔄 Live Stream": create_streaming_simulator,
-        "🔍 Explainable AI": create_shap_explanation,
-        "💰 Business Impact": create_business_impact_calculator,
-        "📈 Model Monitoring": create_model_monitoring_dashboard,
-        "🏆 A/B Testing": show_ab_testing,
-        "🚀 Deployment": show_deployment_simulator
+        "[TARGET] Command Center": show_command_center,
+        "[PROCESS] Live Stream": create_streaming_simulator,
+        "[SEARCH] Explainable AI": create_shap_explanation,
+        "[MONEY] Business Impact": create_business_impact_calculator,
+        "[CHART] Model Monitoring": create_model_monitoring_dashboard,
+        "[TOP] A/B Testing": show_ab_testing,
+        ">>> Deployment": show_deployment_simulator
     }
     
     # Sidebar navigation
-    st.sidebar.markdown("## 🧭 Navigation")
+    st.sidebar.markdown("## [NAV] Navigation")
     selected_page = st.sidebar.selectbox("Choose a section:", list(pages.keys()))
     
     # Persona-specific sidebar
     persona = USER_PERSONAS[st.session_state.user_persona]
     st.sidebar.markdown(f"""
-    ### 👤 Your Profile: {persona_name}
+    ### [USER] Your Profile: {persona_name}
     **Focus**: {persona['focus']}
     
     **Today's Goals**:
@@ -1149,7 +1149,7 @@ def main():
 
 def show_command_center():
     """Main command center overview."""
-    st.markdown("## 🎯 Fraud Detection Command Center")
+    st.markdown("## [TARGET] Fraud Detection Command Center")
     
     df = load_data()
     models, scaler, results = load_models()
@@ -1200,7 +1200,7 @@ def show_command_center():
     
     # Model performance overview
     if results:
-        st.markdown("### 🏆 Model Performance Overview")
+        st.markdown("### [TOP] Model Performance Overview")
         
         performance_data = []
         for model_name, metrics in results.items():
@@ -1221,7 +1221,7 @@ def show_command_center():
         st.plotly_chart(fig, use_container_width=True)
     
     # Dataset overview
-    st.markdown("### 📊 Dataset Overview")
+    st.markdown("### [DATA] Dataset Overview")
     
     col1, col2 = st.columns(2)
     
@@ -1248,7 +1248,7 @@ def show_command_center():
 
 def show_ab_testing():
     """A/B testing interface for model comparison."""
-    st.markdown("### 🧪 A/B Testing & Model Comparison")
+    st.markdown("### [TEST] A/B Testing & Model Comparison")
     
     models, scaler, results = load_models()
     
@@ -1291,7 +1291,7 @@ def show_ab_testing():
             """, unsafe_allow_html=True)
     
     # A/B test configuration
-    st.markdown("#### ⚙️ Test Configuration")
+    st.markdown("#### [SETTING] Test Configuration")
     
     col1, col2, col3 = st.columns(3)
     
@@ -1305,7 +1305,7 @@ def show_ab_testing():
         sample_size = st.number_input("Daily Sample Size:", 100, 10000, 1000)
     
     # Simulate A/B test results
-    if st.button("🚀 Run A/B Test Simulation"):
+    if st.button(">>> Run A/B Test Simulation"):
         
         # Simulate test results
         days = range(test_duration)
@@ -1357,7 +1357,7 @@ def show_ab_testing():
             
             st.markdown(f"""
             <div class="insight-box">
-                <h4>🏆 A/B Test Results</h4>
+                <h4>[TOP] A/B Test Results</h4>
                 <p><strong>Winner:</strong> {winner}</p>
                 <p><strong>Improvement:</strong> {abs(improvement):.2f}%</p>
                 <p><strong>Statistical Significance:</strong> {'High' if abs(improvement) > 5 else 'Moderate' if abs(improvement) > 2 else 'Low'}</p>
@@ -1376,10 +1376,10 @@ def show_ab_testing():
 
 def show_deployment_simulator():
     """Deployment simulation and system health."""
-    st.markdown("### 🚀 Deployment Simulation & System Health")
+    st.markdown("### >>> Deployment Simulation & System Health")
     
     # Deployment configuration
-    st.markdown("#### ⚙️ Deployment Configuration")
+    st.markdown("#### [SETTING] Deployment Configuration")
     
     col1, col2, col3 = st.columns(3)
     
@@ -1393,7 +1393,7 @@ def show_deployment_simulator():
         redundancy_level = st.selectbox("Redundancy:", ["Single", "Dual", "Multi-AZ"])
     
     # System health simulation
-    st.markdown("#### 🔧 System Health Metrics")
+    st.markdown("#### [CONFIG] System Health Metrics")
     
     # Generate real-time metrics
     current_time = datetime.now()
@@ -1475,7 +1475,7 @@ def show_deployment_simulator():
     """, unsafe_allow_html=True)
     
     # Deployment checklist
-    st.markdown("#### ✅ Production Deployment Checklist")
+    st.markdown("#### [OK] Production Deployment Checklist")
     
     checklist_items = [
         ("Load Testing", True),
@@ -1491,13 +1491,13 @@ def show_deployment_simulator():
     ]
     
     for item, status in checklist_items:
-        status_icon = "✅" if status else "❌"
+        status_icon = "[OK]" if status else "[ERROR]"
         st.markdown(f"{status_icon} {item}")
     
     # Scaling simulation
-    st.markdown("#### 📈 Auto-scaling Simulation")
+    st.markdown("#### [CHART] Auto-scaling Simulation")
     
-    if st.button("🔥 Simulate Traffic Spike"):
+    if st.button("[HOT] Simulate Traffic Spike"):
         spike_data = []
         for minute in range(10):
             if minute < 3:

@@ -34,11 +34,11 @@ class FraudDetectionPipeline:
         
     def load_and_preprocess_data(self, file_path, test_size=0.2):
         """Load and preprocess the data efficiently."""
-        print("📊 Loading and preprocessing data...")
+        print("[DATA] Loading and preprocessing data...")
         
         # Load data
         df = pd.read_csv(file_path)
-        print(f"✅ Loaded {len(df):,} transactions")
+        print(f"[OK] Loaded {len(df):,} transactions")
         
         # Basic feature engineering
         df['Amount_log'] = np.log(df['Amount'] + 1)
@@ -62,75 +62,75 @@ class FraudDetectionPipeline:
         X_train_scaled = pd.DataFrame(X_train_scaled, columns=feature_cols, index=X_train.index)
         X_test_scaled = pd.DataFrame(X_test_scaled, columns=feature_cols, index=X_test.index)
         
-        print(f"✅ Train set: {len(X_train_scaled):,} ({y_train.sum()} frauds)")
-        print(f"✅ Test set: {len(X_test_scaled):,} ({y_test.sum()} frauds)")
+        print(f"[OK] Train set: {len(X_train_scaled):,} ({y_train.sum()} frauds)")
+        print(f"[OK] Test set: {len(X_test_scaled):,} ({y_test.sum()} frauds)")
         
         return X_train_scaled, X_test_scaled, y_train, y_test
     
     def train_baseline_models(self, X_train, y_train):
         """Train baseline models."""
-        print("\n🏗️ Training Baseline Models...")
+        print("\n[BUILD] Training Baseline Models...")
         print("=" * 50)
         
         # 1. Logistic Regression
-        print("📊 Training Logistic Regression...")
+        print("[DATA] Training Logistic Regression...")
         lr = LogisticRegression(random_state=42, max_iter=1000, class_weight='balanced')
         lr.fit(X_train, y_train)
         self.models['logistic_regression'] = lr
-        print("✅ Logistic Regression trained")
+        print("[OK] Logistic Regression trained")
         
         # 2. Random Forest
-        print("🌳 Training Random Forest...")
+        print("[TREE] Training Random Forest...")
         rf = RandomForestClassifier(n_estimators=100, random_state=42, 
                                   class_weight='balanced', n_jobs=-1)
         rf.fit(X_train, y_train)
         self.models['random_forest'] = rf
-        print("✅ Random Forest trained")
+        print("[OK] Random Forest trained")
         
         # 3. Neural Network
-        print("🧠 Training Neural Network...")
+        print("[AI] Training Neural Network...")
         nn = MLPClassifier(hidden_layer_sizes=(100, 50), random_state=42, 
                           max_iter=500, early_stopping=True)
         nn.fit(X_train, y_train)
         self.models['neural_network'] = nn
-        print("✅ Neural Network trained")
+        print("[OK] Neural Network trained")
     
     def train_anomaly_models(self, X_train, y_train):
         """Train anomaly detection models."""
-        print("\n🔍 Training Anomaly Detection Models...")
+        print("\n[SEARCH] Training Anomaly Detection Models...")
         print("=" * 50)
         
         # Get only normal transactions for anomaly detection
         X_normal = X_train[y_train == 0]
         
         # 1. Isolation Forest
-        print("🌲 Training Isolation Forest...")
+        print("[TREE] Training Isolation Forest...")
         iso_forest = IsolationForest(contamination=0.002, random_state=42, n_jobs=-1)
         iso_forest.fit(X_normal)
         self.models['isolation_forest'] = iso_forest
-        print("✅ Isolation Forest trained")
+        print("[OK] Isolation Forest trained")
         
         # 2. One-Class SVM (on a sample for efficiency)
-        print("🎯 Training One-Class SVM...")
+        print("[TARGET] Training One-Class SVM...")
         sample_size = min(5000, len(X_normal))
         X_sample = X_normal.sample(n=sample_size, random_state=42)
         
         ocsvm = OneClassSVM(gamma='scale', nu=0.002)
         ocsvm.fit(X_sample)
         self.models['one_class_svm'] = ocsvm
-        print("✅ One-Class SVM trained")
+        print("[OK] One-Class SVM trained")
     
     def train_with_smote(self, X_train, y_train):
         """Train models with SMOTE balanced data."""
-        print("\n⚖️ Training with SMOTE balancing...")
+        print("\n[BALANCE] Training with SMOTE balancing...")
         print("=" * 50)
         
         # Apply SMOTE
         smote = SMOTE(random_state=42)
         X_smote, y_smote = smote.fit_resample(X_train, y_train)
         
-        print(f"📊 Original: {len(y_train)} samples ({y_train.sum()} frauds)")
-        print(f"📊 SMOTE: {len(y_smote)} samples ({y_smote.sum()} frauds)")
+        print(f"[DATA] Original: {len(y_train)} samples ({y_train.sum()} frauds)")
+        print(f"[DATA] SMOTE: {len(y_smote)} samples ({y_smote.sum()} frauds)")
         
         # Train models on balanced data
         rf_smote = RandomForestClassifier(n_estimators=100, random_state=42, n_jobs=-1)
@@ -141,17 +141,17 @@ class FraudDetectionPipeline:
         lr_smote.fit(X_smote, y_smote)
         self.models['logistic_regression_smote'] = lr_smote
         
-        print("✅ SMOTE models trained")
+        print("[OK] SMOTE models trained")
     
     def evaluate_models(self, X_test, y_test):
         """Evaluate all trained models."""
-        print("\n📊 Evaluating Models...")
+        print("\n[DATA] Evaluating Models...")
         print("=" * 50)
         
         self.results = {}
         
         for name, model in self.models.items():
-            print(f"🔍 Evaluating {name}...")
+            print(f"[SEARCH] Evaluating {name}...")
             
             try:
                 if 'anomaly' in name or 'isolation' in name or 'svm' in name:
@@ -194,14 +194,14 @@ class FraudDetectionPipeline:
                 print(f"   Avg Precision: {avg_precision:.4f}")
                 
             except Exception as e:
-                print(f"   ❌ Error evaluating {name}: {str(e)}")
+                print(f"   [ERROR] Error evaluating {name}: {str(e)}")
                 continue
         
-        print("✅ Model evaluation completed")
+        print("[OK] Model evaluation completed")
     
     def create_performance_comparison(self):
         """Create a comprehensive performance comparison."""
-        print("\n📈 Creating Performance Comparison...")
+        print("\n[CHART] Creating Performance Comparison...")
         
         # Prepare data for comparison
         comparison_data = []
@@ -238,14 +238,14 @@ class FraudDetectionPipeline:
         plt.savefig('model_comparison.png', dpi=300, bbox_inches='tight')
         plt.show()
         
-        print("📊 Performance comparison table:")
+        print("[DATA] Performance comparison table:")
         print(df_comparison.to_string(index=False))
         
         return df_comparison
     
     def create_detailed_analysis(self, X_test, y_test):
         """Create detailed analysis plots."""
-        print("\n📊 Creating Detailed Analysis...")
+        print("\n[DATA] Creating Detailed Analysis...")
         
         # Get the best performing model
         best_model_name = max(self.results.keys(), 
@@ -301,23 +301,23 @@ class FraudDetectionPipeline:
         plt.savefig('detailed_analysis.png', dpi=300, bbox_inches='tight')
         plt.show()
         
-        print(f"🏆 Best performing model: {best_model_name}")
-        print(f"📊 F1-Score: {best_results['f1_score']:.4f}")
+        print(f"[TOP] Best performing model: {best_model_name}")
+        print(f"[DATA] F1-Score: {best_results['f1_score']:.4f}")
         
     def save_models(self):
         """Save all trained models."""
-        print("\n💾 Saving models...")
+        print("\n[SAVE] Saving models...")
         
         # Save all models (use relative paths for compatibility)
         joblib.dump(self.models, 'fraud_models.joblib')
         joblib.dump(self.scaler, 'scaler.joblib')
         joblib.dump(self.results, 'model_results.joblib')
         
-        print("✅ Models saved successfully")
+        print("[OK] Models saved successfully")
 
 def main():
     """Main pipeline execution."""
-    print("🚀 Credit Card Fraud Detection - Complete ML Pipeline")
+    print(">>> Credit Card Fraud Detection - Complete ML Pipeline")
     print("=" * 60)
     
     # Initialize pipeline
@@ -341,8 +341,8 @@ def main():
     # Save everything
     pipeline.save_models()
     
-    print("\n🎉 Pipeline completed successfully!")
-    print(f"📊 Total models trained: {len(pipeline.models)}")
+    print("\n*** Pipeline completed successfully!")
+    print(f"[DATA] Total models trained: {len(pipeline.models)}")
     
     return pipeline, comparison_df
 
