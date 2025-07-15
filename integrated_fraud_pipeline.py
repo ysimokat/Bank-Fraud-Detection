@@ -220,13 +220,18 @@ class IntegratedFraudPipeline:
             }
             
             if best_models:
-                self.calibration_pipeline = ModelCalibrationPipeline()
+                print(f"[DEBUG] Creating calibration pipeline with {len(best_models)} models")
+                self.calibration_pipeline = ModelCalibrationPipeline(best_models)
                 # Note: Full calibration would require the original training data
                 print("[OK] Model calibration configured")
                 print(f"   Models ready for calibration: {list(best_models.keys())}")
+            else:
+                print("[WARNING] No models available for calibration")
             
         except Exception as e:
             print(f"WARNING: Calibration skipped due to: {str(e)}")
+            import traceback
+            traceback.print_exc()
     
     def create_ensemble(self):
         """Create ensemble of best models."""

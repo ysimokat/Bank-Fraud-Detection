@@ -607,8 +607,21 @@ def create_shap_explanation():
         
         if hasattr(model, 'feature_importances_'):
             # Use actual feature importance
-            feature_names = [f'V{i}' for i in range(1, 29)] + ['Amount', 'Time']
+            # Get the actual number of features from the model
+            n_features = model.n_features_in_ if hasattr(model, 'n_features_in_') else len(model.feature_importances_)
             importances = model.feature_importances_
+            
+            # Create feature names based on actual number of features
+            if n_features == 30:
+                feature_names = [f'V{i}' for i in range(1, 29)] + ['Amount', 'Time']
+            else:
+                # Generic feature names if number doesn't match
+                feature_names = [f'Feature_{i}' for i in range(n_features)]
+            
+            # Ensure arrays have same length
+            min_len = min(len(feature_names), len(importances))
+            feature_names = feature_names[:min_len]
+            importances = importances[:min_len]
             
             importance_df = pd.DataFrame({
                 'Feature': feature_names,
